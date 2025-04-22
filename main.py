@@ -4,7 +4,7 @@ import tkinter as tk
 from gtts import gTTS
 from tkinter import ttk
 import speech_recognition as sr
-from playsound import playsound
+import pygame
 from deep_translator import GoogleTranslator
 from google.transliteration import transliterate_text
 
@@ -17,6 +17,9 @@ win.geometry("700x450")
 win.title("Real-Time Voice🎙️ Translator🔊")
 icon = tk.PhotoImage(file="icon.png")
 win.iconphoto(False, icon)
+
+pygame.init()
+pygame.mixer.init()
 
 # Create labels and text boxes for the recognized and translated text
 input_label = tk.Label(win, text="Recognized Text ⮯")
@@ -113,7 +116,13 @@ def update_translation():
 
                 voice = gTTS(translated_text, lang=output_lang.get())
                 voice.save('voice.mp3')
-                playsound('voice.mp3')
+                pygame.mixer.music.load('voice.mp3')
+                pygame.mixer.music.play()
+
+                # Wait until the sound finishes playing
+                while pygame.mixer.music.get_busy():
+                    pygame.time.Clock().tick(10)
+
                 os.remove('voice.mp3')
 
                 output_text.insert(tk.END, translated_text + "\n")
